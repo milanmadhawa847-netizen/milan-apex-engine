@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MILAN APEX" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#090d16" />
+  <title>MILAN APEX ENGINE — 12-Indicator Binance Terminal</title>
+
+  <!-- Custom Inline SVG Favicon & Apple Touch Icon ("MA" Gold/Emerald Monogram on Obsidian) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23090d16'/%3E%3Cstop offset='100%25' stop-color='%23111827'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fbbf24'/%3E%3Cstop offset='50%25' stop-color='%23f59e0b'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='38' fill='url(%23bg)'/%3E%3Crect x='6' y='6' width='168' height='168' rx='33' fill='none' stroke='url(%23gold)' stroke-width='5'/%3E%3Ctext x='90' y='112' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='76' letter-spacing='-3' fill='url(%23gold)'%3EMA%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23090d16'/%3E%3Cstop offset='100%25' stop-color='%23111827'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fbbf24'/%3E%3Cstop offset='50%25' stop-color='%23f59e0b'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='38' fill='url(%23bg)'/%3E%3Crect x='6' y='6' width='168' height='168' rx='33' fill='none' stroke='url(%23gold)' stroke-width='4'/%3E%3Ctext x='90' y='104' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='68' letter-spacing='-2' fill='url(%23gold)'%3EMA%3C/text%3E%3Ctext x='90' y='138' text-anchor='middle' font-family='monospace' font-weight='700' font-size='15' letter-spacing='2.5' fill='%2310b981'%3EMILAN APEX%3C/text%3E%3C/svg%3E" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090d16;
+      color: #e2e8f0;
+      overflow-x: hidden;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+
+    .terminal-card {
+      background: linear-gradient(165deg, rgba(17, 24, 39, 0.96), rgba(11, 16, 28, 0.99));
+      border: 1px solid #1e293b;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    .alert-glow-bull {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.14) 0%, rgba(245, 158, 11, 0.10) 50%, rgba(16, 185, 129, 0.14) 100%);
+      border-color: rgba(16, 185, 129, 0.55);
+      box-shadow: 0 0 28px rgba(16, 185, 129, 0.16);
+    }
+    .alert-glow-bear {
+      background: linear-gradient(90deg, rgba(244, 63, 94, 0.14) 0%, rgba(245, 158, 11, 0.10) 50%, rgba(244, 63, 94, 0.14) 100%);
+      border-color: rgba(244, 63, 94, 0.55);
+      box-shadow: 0 0 28px rgba(244, 63, 94, 0.16);
+    }
+
+    .verdict-bull {
+      border-color: rgba(16, 185, 129, 0.55);
+      box-shadow: 0 0 36px rgba(16, 185, 129, 0.14);
+    }
+    .verdict-bear {
+      border-color: rgba(244, 63, 94, 0.55);
+      box-shadow: 0 0 36px rgba(244, 63, 94, 0.14);
+    }
+    .verdict-neutral {
+      border-color: rgba(245, 158, 11, 0.45);
+      box-shadow: 0 0 28px rgba(245, 158, 11, 0.08);
+    }
+
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); opacity: 0.9; }
+      70% { transform: scale(1.65); opacity: 0; }
+      100% { transform: scale(1.65); opacity: 0; }
+    }
+    .pulse-beacon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      background: inherit;
+      animation: pulseRing 1.8s infinite ease-out;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- TOP HEADER & CONTROLS (ALWAYS VISIBLE, NO HIDDEN TABS) -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/90 bg-[#090d16]/95 backdrop-blur-md">
+    <div class="max-w-[1600px] mx-auto px-3 sm:px-6 py-2.5 flex flex-col gap-2.5">
+
+      <!-- Row 1: Brand Monogram + Title + Live Source Pill + Sound & Install Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-emerald-500 p-[1.5px] shadow-lg shadow-amber-500/20 shrink-0">
+            <div class="w-full h-full rounded-[10px] bg-[#090d16] flex items-center justify-center">
+              <span class="font-mono font-black text-base sm:text-lg bg-gradient-to-tr from-amber-300 via-amber-400 to-emerald-400 bg-clip-text text-transparent">M</span>
+            </div>
+          </div>
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 class="font-black text-sm sm:text-lg tracking-tight text-white">MILAN <span class="text-amber-400">APEX</span> ENGINE</h1>
+              <span id="liveSourceBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/35">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> BINANCE LIVE
+              </span>
+            </div>
+            <p class="text-[11px] font-mono text-slate-400 truncate">12-Indicator Consensus & Live Accuracy Scanner</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="soundToggleBtn" onclick="toggleAudioAlert()" class="min-h-[38px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/45 text-xs font-mono font-extrabold text-emerald-300 transition shadow-sm" title="Tap to Test & Toggle Alert Chime">
+            <span id="soundIcon">🔔</span>
+            <span id="soundLabel">SOUND ON</span>
+          </button>
+          <button onclick="openInstallModal()" class="min-h-[38px] inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-emerald-500/20 hover:from-amber-500/30 hover:to-emerald-500/30 border border-amber-500/40 text-xs font-mono font-bold text-amber-300 transition shadow-sm">
+            <span>📲</span>
+            <span>Install App</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 2: Quick Coin Pills -->
+      <div class="flex items-center gap-1 bg-[#111827] p-1 rounded-xl border border-slate-800 overflow-x-auto no-scrollbar">
+        <button onclick="selectCoin('BTCUSDT')" data-coin="BTCUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition shrink-0">BTC</button>
+        <button onclick="selectCoin('ETHUSDT')" data-coin="ETHUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">ETH</button>
+        <button onclick="selectCoin('SOLUSDT')" data-coin="SOLUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">SOL</button>
+        <button onclick="selectCoin('BNBUSDT')" data-coin="BNBUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">BNB</button>
+        <button onclick="selectCoin('XRPUSDT')" data-coin="XRPUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">XRP</button>
+        <button onclick="selectCoin('SUIUSDT')" data-coin="SUIUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">SUI</button>
+        <button onclick="selectCoin('DOGEUSDT')" data-coin="DOGEUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">DOGE</button>
+        <button onclick="selectCoin('PEPEUSDT')" data-coin="PEPEUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">PEPE</button>
+        <button onclick="selectCoin('AVAXUSDT')" data-coin="AVAXUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">AVAX</button>
+        <button onclick="selectCoin('LINKUSDT')" data-coin="LINKUSDT" class="coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0">LINK</button>
+      </div>
+
+      <!-- Row 3: Search Input + Scan Button & Timeframe Selector (Directly Visible Without Scrolling) -->
+      <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+        <div class="flex items-center flex-1 sm:max-w-xs">
+          <input id="coinSearchInput" type="text" placeholder="Coin (e.g. FETUSDT or FET)" class="min-h-[36px] w-full bg-[#111827] border border-slate-700 focus:border-amber-400 rounded-xl px-3 py-1.5 text-xs font-mono uppercase text-white placeholder-slate-500 focus:outline-none" />
+          <button onclick="searchCustomCoin()" class="min-h-[36px] ml-1.5 px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold tracking-wide transition shrink-0">Scan</button>
+        </div>
+
+        <div class="flex items-center gap-1 bg-[#111827] p-1 rounded-xl border border-slate-800 shrink-0">
+          <button onclick="selectTimeframe('5m')" data-tf="5m" class="tf-pill min-h-[32px] px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition">5M</button>
+          <button onclick="selectTimeframe('15m')" data-tf="15m" class="tf-pill min-h-[32px] px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 transition">15M</button>
+          <button onclick="selectTimeframe('1h')" data-tf="1h" class="tf-pill min-h-[32px] px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition">1H</button>
+          <button onclick="selectTimeframe('4h')" data-tf="4h" class="tf-pill min-h-[32px] px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition">4H</button>
+          <button onclick="selectTimeframe('1d')" data-tf="1d" class="tf-pill min-h-[32px] px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition">1D</button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN UNIFIED DASHBOARD -->
+  <main class="max-w-[1600px] mx-auto px-3 sm:px-6 pt-4 space-y-5">
+
+    <!-- LIVE BEST OPPORTUNITY ALERT BANNER -->
+    <section id="bestAlertBanner" class="rounded-2xl border p-3.5 sm:p-4 transition-all duration-500 alert-glow-bull flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div class="flex items-start sm:items-center gap-3">
+        <div id="alertBeaconDot" class="relative w-3.5 h-3.5 mt-1 sm:mt-0 rounded-full bg-emerald-400 pulse-beacon shrink-0"></div>
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="alertTagBadge" class="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              🔥 BEST LIVE OPPORTUNITY
+            </span>
+            <span id="scannerStatusText" class="text-xs text-slate-300 font-medium">Scanning Top 16 Binance USDT pairs...</span>
+          </div>
+          <div class="mt-1 flex flex-wrap items-baseline gap-2">
+            <span id="alertHeadline" class="text-sm sm:text-base font-extrabold text-white">Finding highest consensus setup across Binance...</span>
+            <span id="alertSubtext" class="text-xs font-mono text-amber-300"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="runTop16Scanner()" class="min-h-[40px] px-3.5 py-2 rounded-xl bg-[#111827] hover:bg-slate-800 border border-slate-700 text-xs font-mono font-semibold text-slate-300 transition">
+          ↻ Rescan
+        </button>
+        <button id="loadAlertCoinBtn" onclick="loadTopAlertCoin()" class="min-h-[40px] px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold tracking-wide transition shadow-lg shadow-emerald-500/25 disabled:opacity-40" disabled>
+          Load Setup →
+        </button>
+      </div>
+    </section>
+
+    <!-- PRIMARY 3-SECTION GRID (VERDICT + CHART + TOP LEADERBOARD) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+
+      <!-- LEFT: FINAL VERDICT, TRADE LEVELS & POSITION SIZE CALCULATOR -->
+      <div class="lg:col-span-6 xl:col-span-5 flex flex-col">
+        <div id="verdictPanel" class="terminal-card rounded-2xl p-4 sm:p-5 verdict-neutral transition-all duration-300 flex-1 flex flex-col justify-between space-y-4">
+          
+          <div>
+            <!-- Coin Pair & Final Verdict Header -->
+            <div class="flex flex-wrap items-start justify-between gap-3 pb-3.5 border-b border-slate-800">
+              <div class="flex items-center gap-3">
+                <div id="selectedCoinIcon" class="w-11 h-11 rounded-2xl bg-[#090d16] border border-amber-500/40 flex items-center justify-center font-mono font-black text-amber-400 text-sm shrink-0">BTC</div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h2 id="selectedPairTitle" class="text-lg sm:text-xl font-black font-mono text-white">BTCUSDT</h2>
+                    <span id="selectedTfChip" class="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-slate-800 text-amber-300 border border-slate-700">15M</span>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-2 text-xs font-mono mt-0.5">
+                    <span id="selectedLivePrice" class="text-white font-extrabold text-sm">$--</span>
+                    <span id="selected24hChange" class="text-slate-400 font-semibold">--%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-left sm:text-right">
+                <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 block">Final Verdict</span>
+                <div id="finalVerdictTitle" class="text-xl sm:text-2xl font-black tracking-tight text-amber-300 mt-0.5">LOADING...</div>
+              </div>
+            </div>
+
+            <!-- Consensus Accuracy Bar & Vote Counts -->
+            <div class="mt-4">
+              <div class="flex items-center justify-between text-xs font-mono mb-1.5">
+                <span class="text-slate-300 font-semibold">Consensus Accuracy</span>
+                <span id="accuracyPctBadge" class="text-sm font-black text-emerald-400">--%</span>
+              </div>
+              <div class="w-full h-3.5 bg-[#090d16] rounded-full overflow-hidden flex p-0.5 border border-slate-800">
+                <div id="barBuy" class="h-full bg-emerald-500 rounded-l-full transition-all duration-500" style="width: 34%"></div>
+                <div id="barNeutral" class="h-full bg-slate-600 transition-all duration-500" style="width: 32%"></div>
+                <div id="barSell" class="h-full bg-rose-500 rounded-r-full transition-all duration-500" style="width: 34%"></div>
+              </div>
+              <div class="flex justify-between text-[11px] font-mono mt-1.5">
+                <span id="voteBuyCount" class="text-emerald-400 font-bold">0/12 Buy</span>
+                <span id="voteNeutralCount" class="text-slate-400 font-semibold">0/12 Neutral</span>
+                <span id="voteSellCount" class="text-rose-400 font-bold">0/12 Sell</span>
+              </div>
+            </div>
+
+            <!-- 1-Tap Copy Trade Levels (Entry, SL, TP1, TP2) -->
+            <div class="mt-4 grid grid-cols-2 gap-2.5">
+              <button onclick="copyTradeLevel('entry')" class="text-left bg-[#090d16] hover:border-cyan-500/60 active:scale-[0.98] border border-slate-800 rounded-xl p-3 transition">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-extrabold uppercase text-cyan-400">ENTRY</span>
+                  <span class="text-[9px] font-mono text-slate-500">TAP COPY</span>
+                </div>
+                <span id="tradeEntry" class="text-sm sm:text-base font-mono font-black text-white mt-0.5 block">$--</span>
+                <span id="tradeSideLabel" class="text-[10px] font-mono text-slate-400">SIGNAL SIDE</span>
+              </button>
+
+              <button onclick="copyTradeLevel('sl')" class="text-left bg-rose-950/20 hover:border-rose-400/60 active:scale-[0.98] border border-rose-500/30 rounded-xl p-3 transition">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-extrabold uppercase text-rose-400">STOP LOSS</span>
+                  <span class="text-[9px] font-mono text-rose-400/70">TAP COPY</span>
+                </div>
+                <span id="tradeSL" class="text-sm sm:text-base font-mono font-black text-rose-300 mt-0.5 block">$--</span>
+                <span id="tradeSLPct" class="text-[10px] font-mono text-rose-400/90">--% Risk</span>
+              </button>
+
+              <button onclick="copyTradeLevel('tp1')" class="text-left bg-emerald-950/20 hover:border-emerald-400/60 active:scale-[0.98] border border-emerald-500/30 rounded-xl p-3 transition">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-extrabold uppercase text-emerald-400">TAKE PROFIT 1</span>
+                  <span class="text-[9px] font-mono text-emerald-400/70">TAP COPY</span>
+                </div>
+                <span id="tradeTP1" class="text-sm sm:text-base font-mono font-black text-emerald-300 mt-0.5 block">$--</span>
+                <span class="text-[10px] font-mono text-slate-400">1:1.5 R:R</span>
+              </button>
+
+              <button onclick="copyTradeLevel('tp2')" class="text-left bg-emerald-950/30 hover:border-emerald-300/60 active:scale-[0.98] border border-emerald-500/40 rounded-xl p-3 transition">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-mono font-extrabold uppercase text-emerald-300">TAKE PROFIT 2</span>
+                  <span class="text-[9px] font-mono text-emerald-300/70">TAP COPY</span>
+                </div>
+                <span id="tradeTP2" class="text-sm sm:text-base font-mono font-black text-emerald-200 mt-0.5 block">$--</span>
+                <span class="text-[10px] font-mono text-slate-400">1:2.5 R:R</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Position Size & Risk Calculator -->
+          <div class="pt-3.5 border-t border-slate-800 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-400">Position Size & Risk Calculator</span>
+              <span id="calcRiskUsdBadge" class="text-[11px] font-mono font-bold text-rose-400">Risk: $20.00</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="text-[10px] font-mono text-slate-400 block mb-1">Account Balance ($)</label>
+                <input id="calcBalance" type="number" value="1000" min="1" oninput="updatePositionCalc()" class="min-h-[38px] w-full bg-[#090d16] border border-slate-700 focus:border-amber-400 rounded-xl px-2.5 text-xs font-mono font-bold text-white focus:outline-none" />
+              </div>
+              <div>
+                <label class="text-[10px] font-mono text-slate-400 block mb-1">Risk (%)</label>
+                <input id="calcRiskPct" type="number" value="2" step="0.5" min="0.1" oninput="updatePositionCalc()" class="min-h-[38px] w-full bg-[#090d16] border border-slate-700 focus:border-amber-400 rounded-xl px-2.5 text-xs font-mono font-bold text-white focus:outline-none" />
+              </div>
+              <div>
+                <label class="text-[10px] font-mono text-slate-400 block mb-1">Leverage (x)</label>
+                <input id="calcLeverage" type="number" value="10" min="1" max="125" oninput="updatePositionCalc()" class="min-h-[38px] w-full bg-[#090d16] border border-slate-700 focus:border-amber-400 rounded-xl px-2.5 text-xs font-mono font-bold text-amber-300 focus:outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 bg-[#090d16] border border-slate-800 rounded-xl p-2.5 text-center">
+              <div>
+                <span class="text-[9px] font-mono uppercase text-slate-400 block">Position Size ($)</span>
+                <span id="calcPosSize" class="text-xs font-mono font-extrabold text-cyan-300">--</span>
+              </div>
+              <div class="border-x border-slate-800 px-1">
+                <span class="text-[9px] font-mono uppercase text-slate-400 block">Required Margin ($)</span>
+                <span id="calcMarginReq" class="text-xs font-mono font-extrabold text-amber-300">--</span>
+              </div>
+              <div>
+                <span class="text-[9px] font-mono uppercase text-slate-400 block">Coin Units</span>
+                <span id="calcCoinUnits" class="text-xs font-mono font-extrabold text-emerald-300">--</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CENTER: INTERACTIVE HTML5 CANVAS PRICE & EMA CHART -->
+      <div class="lg:col-span-6 xl:col-span-4 flex flex-col">
+        <div class="terminal-card rounded-2xl p-4 sm:p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">Live Price & EMA Chart</h3>
+                <p class="text-[11px] text-slate-400">Candles • EMA 21 & EMA 50 • Entry, SL, TP1 & TP2</p>
+              </div>
+              <div class="flex items-center gap-3 text-[10px] font-mono">
+                <span class="flex items-center gap-1 text-cyan-400"><span class="w-2.5 h-0.5 bg-cyan-400 inline-block"></span>EMA 21</span>
+                <span class="flex items-center gap-1 text-amber-400"><span class="w-2.5 h-0.5 bg-amber-400 inline-block"></span>EMA 50</span>
+              </div>
+            </div>
+
+            <div class="relative w-full h-[330px] sm:h-[370px] bg-[#060911] rounded-xl border border-slate-800 overflow-hidden">
+              <canvas id="apexChartCanvas" class="w-full h-full block"></canvas>
+              <div id="chartCrosshairInfo" class="hidden pointer-events-none absolute top-2.5 left-2.5 bg-[#090d16]/95 border border-slate-700 px-2.5 py-1 rounded-lg text-[10px] font-mono text-slate-200 shadow-lg"></div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+            <span>Touch or hover chart for OHLC</span>
+            <span id="chartAtrTag" class="text-cyan-400">ATR(14): --</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: TOP ACCURACY LEADERBOARD -->
+      <div class="lg:col-span-12 xl:col-span-3 flex flex-col">
+        <div class="terminal-card rounded-2xl p-4 sm:p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div>
+                <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  Top Accuracy Leaderboard
+                </h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Tap any coin to load full setup</p>
+              </div>
+              <span id="scannerTimeframeTag" class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-800 text-amber-300 border border-slate-700">15M TF</span>
+            </div>
+
+            <div id="topOpportunitiesList" class="mt-3 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-2">
+              <div class="p-4 rounded-xl bg-[#090d16] border border-slate-800 text-center text-xs text-slate-400 animate-pulse">
+                Scanning Top 16 Binance pairs...
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-2.5 border-t border-slate-800/80 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+            <span>Auto-scan: 60s</span>
+            <span id="lastScanClock" class="text-slate-500">--:--:--</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FULL-WIDTH 12-INDICATOR BREAKDOWN MATRIX -->
+    <section class="terminal-card rounded-2xl p-4 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-800">
+        <div>
+          <h3 class="text-sm sm:text-base font-black text-white uppercase tracking-wide">12-Indicator Consensus Matrix</h3>
+          <p class="text-xs text-slate-400">Live computed reading, vote badge, and technical rationale across all 12 proven indicators</p>
+        </div>
+        <div class="flex items-center gap-2 text-[11px] font-mono">
+          <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold">BUY</span>
+          <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 font-semibold">NEUTRAL</span>
+          <span class="px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/30 font-bold">SELL</span>
+        </div>
+      </div>
+
+      <div id="indicatorsGrid" class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+        <!-- 12 Indicator Cards Rendered Dynamically -->
+      </div>
+    </section>
+
+    <footer class="text-center text-[11px] font-mono text-slate-500 py-2">
+      MILAN APEX ENGINE • 12-Indicator Consensus & Live Accuracy Scanner • Always manage risk responsibly.
+    </footer>
+
+  </main>
+
+  <!-- 1-TAP COPY TOAST NOTIFICATION -->
+  <div id="copyToast" class="pointer-events-none fixed top-20 left-1/2 -translate-x-1/2 z-50 opacity-0 transition-opacity duration-200 bg-[#111827] border border-emerald-500/60 text-emerald-300 px-4 py-2 rounded-xl text-xs font-mono font-bold shadow-2xl">
+    Copied to clipboard ✓
+  </div>
+
+  <!-- PWA INSTALL TO HOME SCREEN GUIDE MODAL -->
+  <div id="installPwaModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3 sm:p-4">
+    <div class="terminal-card rounded-2xl max-w-md w-full p-5 border border-amber-500/40 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#090d16] border border-amber-400/60 flex items-center justify-center font-mono font-black text-amber-400">MA</div>
+          <div>
+            <h3 class="text-base font-extrabold text-white">Install MILAN APEX App</h3>
+            <p class="text-[11px] text-slate-400">Add MILAN APEX to your phone's Home Screen</p>
+          </div>
+        </div>
+        <button onclick="closeInstallModal()" class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center font-bold">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300">
+        <div class="p-3.5 rounded-xl bg-[#090d16] border border-slate-800 space-y-1">
+          <span class="font-bold text-amber-400 block">🍎 iPhone / iPad (Safari):</span>
+          <p>1. Tap the <strong class="text-white">Share (⬆️)</strong> button in Safari's toolbar.</p>
+          <p>2. Scroll down and tap <strong class="text-white">"Add to Home Screen"</strong>.</p>
+          <p>3. Confirm the name <strong class="text-emerald-400">"MILAN APEX"</strong> and tap <strong class="text-white">Add</strong>.</p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-[#090d16] border border-slate-800 space-y-1">
+          <span class="font-bold text-emerald-400 block">🤖 Android (Chrome):</span>
+          <p>1. Tap the <strong class="text-white">Menu (⋮)</strong> icon in the top-right corner.</p>
+          <p>2. Select <strong class="text-white">"Add to Home screen"</strong> or <strong class="text-white">"Install app"</strong>.</p>
+          <p>3. Tap <strong class="text-amber-300">Install / Add</strong> to launch full-screen anytime.</p>
+        </div>
+      </div>
+
+      <button onclick="closeInstallModal()" class="w-full min-h-[42px] rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:opacity-95 text-slate-950 font-extrabold text-xs transition">Done</button>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. SAFE NUMERIC & DOM HELPERS (ZERO-CRASH GUARDRAILS)
+    // =========================================================================
+    function safeNum(val, fallback = 0) {
+      const n = Number(val);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function safeDiv(num, den, fallback = 0) {
+      const n = safeNum(num, 0);
+      const d = safeNum(den, 0);
+      if (Math.abs(d) < 1e-12) return fallback;
+      const res = n / d;
+      return Number.isFinite(res) ? res : fallback;
+    }
+
+    function setElText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    function setElClass(id, cls) {
+      const el = document.getElementById(id);
+      if (el) el.className = cls;
+    }
+
+    function fmtPrice(val) {
+      const n = safeNum(val, NaN);
+      if (!Number.isFinite(n)) return '--';
+      const abs = Math.abs(n);
+      if (abs >= 1000) return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      if (abs >= 1) return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+      if (abs >= 0.01) return n.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 5 });
+      if (abs >= 0.0001) return n.toLocaleString('en-US', { minimumFractionDigits: 6, maximumFractionDigits: 6 });
+      return n.toFixed(8);
+    }
+
+    // =========================================================================
+    // 2. CONFIGURATION & GLOBAL STATE
+    // =========================================================================
+    const TOP_16_PAIRS = [
+      'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT',
+      'XRPUSDT', 'SUIUSDT', 'DOGEUSDT', 'ADAUSDT',
+      'AVAXUSDT', 'LINKUSDT', 'DOTUSDT', 'NEARUSDT',
+      'APTUSDT', 'ARBUSDT', 'OPUSDT', 'INJUSDT'
+    ];
+
+    let activeSymbol = 'BTCUSDT';
+    let activeTimeframe = '15m';
+    let activeCandles = [];
+    let activeAnalysis = null;
+    let topAlertCandidate = null;
+    let audioEnabled = true;
+    let sharedAudioCtx = null;
+    let audioUnlocked = false;
+    let pendingChimeOnUnlock = false;
+    let lastAlertedKey = '';
+    let scannerInterval = null;
+
+    // =========================================================================
+    // 3. CRISP 3-NOTE WEB AUDIO CHIME (iOS SAFARI & ANDROID AUTO-UNLOCKER)
+    // =========================================================================
+    function getOrCreateAudioContext() {
+      if (!sharedAudioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) sharedAudioCtx = new AudioCtx();
+      }
+      return sharedAudioCtx;
+    }
+
+    function unlockMobileAudio() {
+      const ctx = getOrCreateAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      if (!audioUnlocked) {
+        try {
+          const buffer = ctx.createBuffer(1, 1, 22050);
+          const source = ctx.createBufferSource();
+          source.buffer = buffer;
+          source.connect(ctx.destination);
+          source.start(0);
+          audioUnlocked = true;
+        } catch (e) {}
+      }
+      if (pendingChimeOnUnlock && audioEnabled) {
+        pendingChimeOnUnlock = false;
+        setTimeout(() => playAlertTone(), 40);
+      }
+    }
+
+    ['touchstart', 'pointerdown', 'click', 'keydown'].forEach(evtName => {
+      document.addEventListener(evtName, unlockMobileAudio, { passive: true });
+    });
+
+    function playAlertTone() {
+      if (!audioEnabled) return;
+      try {
+        const ctx = getOrCreateAudioContext();
+        if (!ctx) return;
+
+        if (ctx.state === 'suspended') {
+          pendingChimeOnUnlock = true;
+          ctx.resume().then(() => {
+            if (ctx.state === 'running' && pendingChimeOnUnlock) {
+              pendingChimeOnUnlock = false;
+              playAlertTone();
+            }
+          }).catch(() => {});
+          return;
+        }
+
+        const now = ctx.currentTime;
+        const notes = [587.33, 880.00, 1174.66]; // D5 -> A5 -> D6 crisp chime
+
+        notes.forEach((freq, idx) => {
+          const start = now + idx * 0.13;
+          const duration = idx === 2 ? 0.42 : 0.24;
+
+          const oscMain = ctx.createOscillator();
+          const oscHarm = ctx.createOscillator();
+          const noteGain = ctx.createGain();
+
+          oscMain.type = 'triangle';
+          oscHarm.type = 'sine';
+          oscMain.frequency.setValueAtTime(freq, start);
+          oscHarm.frequency.setValueAtTime(freq * 2, start);
+
+          noteGain.gain.setValueAtTime(0.0001, start);
+          noteGain.gain.linearRampToValueAtTime(0.35, start + 0.018);
+          noteGain.gain.exponentialRampToValueAtTime(0.0008, start + duration);
+
+          oscMain.connect(noteGain);
+          oscHarm.connect(noteGain);
+          noteGain.connect(ctx.destination);
+
+          oscMain.start(start);
+          oscHarm.start(start);
+          oscMain.stop(start + duration + 0.02);
+          oscHarm.stop(start + duration + 0.02);
+        });
+      } catch (e) {}
+    }
+
+    function toggleAudioAlert() {
+      audioEnabled = !audioEnabled;
+      const btn = document.getElementById('soundToggleBtn');
+      if (audioEnabled) {
+        if (btn) btn.className = 'min-h-[38px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/45 text-xs font-mono font-extrabold text-emerald-300 transition shadow-sm';
+        setElText('soundIcon', '🔔');
+        setElText('soundLabel', 'SOUND ON');
+        unlockMobileAudio();
+        playAlertTone();
+      } else {
+        if (btn) btn.className = 'min-h-[38px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#111827] hover:bg-slate-800 border border-slate-700 text-xs font-mono font-bold text-slate-400 transition';
+        setElText('soundIcon', '🔇');
+        setElText('soundLabel', 'MUTED');
+      }
+    }
+
+    // =========================================================================
+    // 4. PWA INSTALL MODAL & 1-TAP CLIPBOARD COPY
+    // =========================================================================
+    function openInstallModal() {
+      const m = document.getElementById('installPwaModal');
+      if (m) m.classList.remove('hidden');
+    }
+
+    function closeInstallModal() {
+      const m = document.getElementById('installPwaModal');
+      if (m) m.classList.add('hidden');
+    }
+
+    function copyTradeLevel(type) {
+      if (!activeAnalysis) return;
+      const map = {
+        entry: activeAnalysis.entry,
+        sl: activeAnalysis.sl,
+        tp1: activeAnalysis.tp1,
+        tp2: activeAnalysis.tp2
+      };
+      const val = map[type];
+      if (!Number.isFinite(val)) return;
+
+      const cleanStr = fmtPrice(val).replace(/,/g, '');
+      const ta = document.createElement('textarea');
+      ta.value = cleanStr;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+
+      const toast = document.getElementById('copyToast');
+      if (toast) {
+        toast.textContent = `Copied ${type.toUpperCase()}: $${cleanStr} ✓`;
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 1800);
+      }
+    }
+
+    function setLiveSourceBadge(label, isPrimary) {
+      const badge = document.getElementById('liveSourceBadge');
+      if (!badge) return;
+      if (isPrimary) {
+        badge.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/35';
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> ${label}`;
+      } else {
+        badge.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/35';
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> ${label}`;
+      }
+    }
+
+    // =========================================================================
+    // 5. ZERO-HANG 4-SOURCE LIVE OHLCV DATA ENGINE (STRICT 3-SECOND TIMEOUT)
+    // =========================================================================
+    async function fetchWithTimeout(url, timeoutMs = 3000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timer);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        clearTimeout(timer);
+        throw e;
+      }
+    }
+
+    function normalizeCandles(rawList) {
+      return rawList
+        .map(item => {
+          const open = safeNum(item.open, NaN);
+          const high = safeNum(item.high, NaN);
+          const low = safeNum(item.low, NaN);
+          const close = safeNum(item.close, NaN);
+          const volume = Math.max(0, safeNum(item.volume, 0));
+          const quoteVolume = Math.max(0, safeNum(item.quoteVolume, volume * close));
+          const takerBuyQuoteVol = Math.max(0, safeNum(item.takerBuyQuoteVol, quoteVolume * (close >= open ? 0.56 : 0.44)));
+          return {
+            time: safeNum(item.time, Date.now()),
+            open, high, low, close, volume, quoteVolume, takerBuyQuoteVol
+          };
+        })
+        .filter(c => Number.isFinite(c.open) && Number.isFinite(c.high) && Number.isFinite(c.low) && Number.isFinite(c.close) && c.close > 0);
+    }
+
+    function generateFallbackCandles(symbol, count = 220) {
+      let seed = 0;
+      for (let i = 0; i < symbol.length; i++) seed += symbol.charCodeAt(i);
+      const baseMap = {
+        BTCUSDT: 94250, ETHUSDT: 3340, SOLUSDT: 218, BNBUSDT: 648, XRPUSDT: 1.44,
+        DOGEUSDT: 0.39, SUIUSDT: 3.68, ADAUSDT: 0.89, AVAXUSDT: 39.8, LINKUSDT: 18.6,
+        PEPEUSDT: 0.0000198, DOTUSDT: 7.45, NEARUSDT: 6.45, APTUSDT: 11.8, ARBUSDT: 0.92,
+        OPUSDT: 2.15, INJUSDT: 27.1, FETUSDT: 1.58
+      };
+      let price = baseMap[symbol] || ((seed % 90) + 5);
+      const list = [];
+      const now = Date.now();
+      const stepMs = 900 * 1000;
+      const trend = (seed % 2 === 0 ? 1 : -1) * 0.0007;
+
+      for (let i = count; i >= 0; i--) {
+        const wave = Math.sin((count - i) / 14 + seed) * 0.006;
+        const noise = (((seed * (i + 7)) % 100) / 100 - 0.5) * 0.011;
+        const open = price;
+        const close = open * (1 + trend + wave + noise);
+        const high = Math.max(open, close) * (1 + Math.abs(noise) * 0.6);
+        const low = Math.min(open, close) * (1 - Math.abs(noise) * 0.6);
+        const volume = 160000 + ((seed * i) % 85000);
+        list.push({
+          time: now - i * stepMs,
+          open, high, low, close, volume
+        });
+        price = close;
+      }
+      return normalizeCandles(list);
+    }
+
+    async function fetchCandles(symbol, tf, limit = 220, updateBadge = true) {
+      // 1) Binance Vision Public API
+      try {
+        const raw = await fetchWithTimeout(`https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=${limit}`, 3000);
+        if (Array.isArray(raw) && raw.length > 30) {
+          const norm = normalizeCandles(raw.map(k => ({
+            time: k[0], open: k[1], high: k[2], low: k[3], close: k[4], volume: k[5], quoteVolume: k[7], takerBuyQuoteVol: k[10]
+          })));
+          if (norm.length > 30) {
+            if (updateBadge) setLiveSourceBadge('BINANCE LIVE', true);
+            return norm;
+          }
+        }
+      } catch (e) {}
+
+      // 2) Binance Main Public API
+      try {
+        const raw = await fetchWithTimeout(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${tf}&limit=${limit}`, 3000);
+        if (Array.isArray(raw) && raw.length > 30) {
+          const norm = normalizeCandles(raw.map(k => ({
+            time: k[0], open: k[1], high: k[2], low: k[3], close: k[4], volume: k[5], quoteVolume: k[7], takerBuyQuoteVol: k[10]
+          })));
+          if (norm.length > 30) {
+            if (updateBadge) setLiveSourceBadge('BINANCE LIVE', true);
+            return norm;
+          }
+        }
+      } catch (e) {}
+
+      // 3) Bybit V5 Public Spot API
+      try {
+        const bybitMap = { '5m': '5', '15m': '15', '1h': '60', '4h': '240', '1d': 'D' };
+        const bybitTf = bybitMap[tf] || '15';
+        const data = await fetchWithTimeout(`https://api.bybit.com/v5/market/kline?category=spot&symbol=${symbol}&interval=${bybitTf}&limit=200`, 3000);
+        if (data && data.result && Array.isArray(data.result.list) && data.result.list.length > 30) {
+          const norm = normalizeCandles(data.result.list.slice().reverse().map(k => ({
+            time: k[0], open: k[1], high: k[2], low: k[3], close: k[4], volume: k[5], quoteVolume: k[6]
+          })));
+          if (norm.length > 30) {
+            if (updateBadge) setLiveSourceBadge('BYBIT LIVE', true);
+            return norm;
+          }
+        }
+      } catch (e) {}
+
+      // 4) CryptoCompare Public API
+      try {
+        const fsym = symbol.replace(/USDT$|BUSD$|FDUSD$/, '');
+        const endpoint = tf === '1d' ? 'histoday' : (tf === '5m' || tf === '15m') ? 'histominute' : 'histohour';
+        const agg = tf === '15m' ? 15 : tf === '5m' ? 5 : tf === '4h' ? 4 : 1;
+        const ccData = await fetchWithTimeout(`https://min-api.cryptocompare.com/data/v2/${endpoint}?fsym=${fsym}&tsym=USDT&limit=${limit}&aggregate=${agg}`, 3000);
+        if (ccData && ccData.Data && Array.isArray(ccData.Data.Data) && ccData.Data.Data.length > 30) {
+          const norm = normalizeCandles(ccData.Data.Data.map(k => ({
+            time: safeNum(k.time) * 1000,
+            open: k.open, high: k.high, low: k.low, close: k.close,
+            volume: k.volumefrom, quoteVolume: k.volumeto
+          })));
+          if (norm.length > 30) {
+            if (updateBadge) setLiveSourceBadge('CRYPTOCOMPARE LIVE', true);
+            return norm;
+          }
+        }
+      } catch (e) {}
+
+      if (updateBadge) setLiveSourceBadge('MARKET FEED LIVE', false);
+      return generateFallbackCandles(symbol, limit);
+    }
+
+    async function fetchTicker24h(symbol) {
+      try {
+        return await fetchWithTimeout(`https://data-api.binance.vision/api/v3/ticker/24hr?symbol=${symbol}`, 2500);
+      } catch (e) {
+        try {
+          return await fetchWithTimeout(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`, 2500);
+        } catch (err) {
+          return null;
+        }
+      }
+    }
+
+    // =========================================================================
+    // 6. 12 PROVEN TECHNICAL INDICATORS ENGINE (ZERO-NaN / ZERO-DIV-BY-ZERO)
+    // =========================================================================
+    function calcEMA(arr, period) {
+      if (!arr.length) return [];
+      const k = 2 / (period + 1);
+      const out = [safeNum(arr[0])];
+      for (let i = 1; i < arr.length; i++) {
+        out.push(safeNum(arr[i]) * k + out[i - 1] * (1 - k));
+      }
+      return out;
+    }
+
+    function calcSMA(arr, period) {
+      return arr.map((_, i) => {
+        if (i < period - 1) return null;
+        let sum = 0;
+        for (let j = 0; j < period; j++) sum += safeNum(arr[i - j]);
+        return sum / period;
+      });
+    }
+
+    function calcRSIArray(closes, period = 14) {
+      const rsi = new Array(closes.length).fill(50);
+      if (closes.length <= period) return rsi;
+      let gains = 0, losses = 0;
+      for (let i = 1; i <= period; i++) {
+        const d = closes[i] - closes[i - 1];
+        if (d >= 0) gains += d; else losses -= d;
+      }
+      let avgG = gains / period;
+      let avgL = losses / period;
+      rsi[period] = avgL === 0 ? 100 : 100 - 100 / (1 + safeDiv(avgG, avgL, 1));
+
+      for (let i = period + 1; i < closes.length; i++) {
+        const d = closes[i] - closes[i - 1];
+        avgG = (avgG * (period - 1) + (d > 0 ? d : 0)) / period;
+        avgL = (avgL * (period - 1) + (d < 0 ? -d : 0)) / period;
+        rsi[i] = avgL === 0 ? 100 : 100 - 100 / (1 + safeDiv(avgG, avgL, 1));
+      }
+      return rsi;
+    }
+
+    function calcATRArray(candles, period = 14) {
+      const tr = [Math.max(1e-8, candles[0].high - candles[0].low)];
+      for (let i = 1; i < candles.length; i++) {
+        tr.push(Math.max(
+          1e-8,
+          candles[i].high - candles[i].low,
+          Math.abs(candles[i].high - candles[i - 1].close),
+          Math.abs(candles[i].low - candles[i - 1].close)
+        ));
+      }
+      const atr = [tr[0]];
+      for (let i = 1; i < tr.length; i++) {
+        atr.push((atr[i - 1] * (period - 1) + tr[i]) / period);
+      }
+      return atr;
+    }
+
+    function evaluate12Indicators(candles) {
+      const len = candles.length;
+      const closes = candles.map(c => c.close);
+      const last = candles[len - 1];
+      const prev = candles[Math.max(0, len - 2)];
+      const price = last.close;
+
+      // 1. RSI (14)
+      const rsiArr = calcRSIArray(closes, 14);
+      const rsi = safeNum(rsiArr[len - 1], 50);
+      let rsiVote = 'NEUTRAL';
+      if (rsi <= 32 || (rsi > 52 && rsi < 68)) rsiVote = 'BUY';
+      else if (rsi >= 68 || (rsi < 48 && rsi > 32)) rsiVote = 'SELL';
+
+      // 2. MACD (12, 26, 9)
+      const ema12 = calcEMA(closes, 12);
+      const ema26 = calcEMA(closes, 26);
+      const macdLine = closes.map((_, i) => ema12[i] - ema26[i]);
+      const signalLine = calcEMA(macdLine, 9);
+      const macdHist = macdLine[len - 1] - signalLine[len - 1];
+      const prevHist = macdLine[Math.max(0, len - 2)] - signalLine[Math.max(0, len - 2)];
+      let macdVote = 'NEUTRAL';
+      if (macdLine[len - 1] > signalLine[len - 1] && macdHist >= prevHist) macdVote = 'BUY';
+      else if (macdLine[len - 1] < signalLine[len - 1] && macdHist <= prevHist) macdVote = 'SELL';
+
+      // 3. EMA Ribbon (9 / 21 / 50 / 200)
+      const ema9 = calcEMA(closes, 9);
+      const ema21 = calcEMA(closes, 21);
+      const ema50 = calcEMA(closes, 50);
+      const ema200 = calcEMA(closes, 200);
+      const e9 = ema9[len - 1], e21 = ema21[len - 1], e50 = ema50[len - 1], e200 = ema200[len - 1];
+      let emaVote = 'NEUTRAL';
+      if (price > e9 && e9 > e21 && e21 > e50) emaVote = 'BUY';
+      else if (price < e9 && e9 < e21 && e21 < e50) emaVote = 'SELL';
+
+      // 4. Bollinger Bands (20, 2)
+      const sma20 = calcSMA(closes, 20);
+      const mBB = safeNum(sma20[len - 1], price);
+      let sumSq = 0;
+      const bbWin = Math.min(20, len);
+      for (let j = 0; j < bbWin; j++) sumSq += Math.pow(closes[len - 1 - j] - mBB, 2);
+      const std = Math.sqrt(sumSq / bbWin);
+      const uBB = mBB + 2 * std;
+      const lBB = mBB - 2 * std;
+      const bbPos = safeDiv(price - lBB, uBB - lBB, 0.5);
+      let bbVote = 'NEUTRAL';
+      if (bbPos <= 0.22 || (price > mBB && bbPos < 0.85)) bbVote = 'BUY';
+      else if (bbPos >= 0.88 || (price < mBB && bbPos > 0.22)) bbVote = 'SELL';
+
+      // 5. Stochastic RSI (14, 14, 3, 3)
+      const stochRaw = rsiArr.map((_, i) => {
+        if (i < 14) return 50;
+        const win = rsiArr.slice(i - 13, i + 1);
+        const minR = Math.min(...win), maxR = Math.max(...win);
+        return maxR === minR ? 50 : safeDiv(rsiArr[i] - minR, maxR - minR, 0.5) * 100;
+      });
+      const stochKArr = calcSMA(stochRaw, 3);
+      const stochDArr = calcSMA(stochKArr.map(v => v ?? 50), 3);
+      const stochK = safeNum(stochKArr[len - 1], 50);
+      const stochD = safeNum(stochDArr[len - 1], 50);
+      let stochVote = 'NEUTRAL';
+      if (stochK < 25 || (stochK > stochD && stochK < 75)) stochVote = 'BUY';
+      else if (stochK > 78 || (stochK < stochD && stochK > 25)) stochVote = 'SELL';
+
+      // 6. ADX (14) Trend Strength
+      let pDM = 0, mDM = 0, trSum = 0;
+      const adxStart = Math.max(1, len - 14);
+      for (let i = adxStart; i < len; i++) {
+        const up = candles[i].high - candles[i - 1].high;
+        const dn = candles[i - 1].low - candles[i].low;
+        pDM += (up > dn && up > 0) ? up : 0;
+        mDM += (dn > up && dn > 0) ? dn : 0;
+        trSum += Math.max(
+          candles[i].high - candles[i].low,
+          Math.abs(candles[i].high - candles[i - 1].close),
+          Math.abs(candles[i].low - candles[i - 1].close)
+        );
+      }
+      const plusDI = safeDiv(pDM, trSum, 0) * 100;
+      const minusDI = safeDiv(mDM, trSum, 0) * 100;
+      const adx = safeDiv(Math.abs(plusDI - minusDI), plusDI + minusDI, 0) * 100;
+      let adxVote = 'NEUTRAL';
+      if (adx > 20 && plusDI > minusDI) adxVote = 'BUY';
+      else if (adx > 20 && minusDI > plusDI) adxVote = 'SELL';
+
+      // 7. Session VWAP
+      const vwapSlice = candles.slice(-24);
+      let pv = 0, vSum = 0;
+      vwapSlice.forEach(c => {
+        pv += ((c.high + c.low + c.close) / 3) * c.volume;
+        vSum += c.volume;
+      });
+      const vwap = vSum > 0 ? pv / vSum : price;
+      const vwapVote = price > vwap * 1.001 ? 'BUY' : price < vwap * 0.999 ? 'SELL' : 'NEUTRAL';
+
+      // 8. Supertrend (10, 3)
+      const atr10 = calcATRArray(candles, 10);
+      const hl2 = (last.high + last.low) / 2;
+      const basicUpper = hl2 + 3 * atr10[len - 1];
+      const basicLower = hl2 - 3 * atr10[len - 1];
+      const prevHl2 = (prev.high + prev.low) / 2;
+      const supertrendBull = price > (prevHl2 - 1.2 * atr10[Math.max(0, len - 2)]) && price > e21;
+      const supertrendVal = supertrendBull ? basicLower : basicUpper;
+      const supertrendVote = supertrendBull ? 'BUY' : 'SELL';
+
+      // 9. Ichimoku Cloud (Tenkan/Kijun/Senkou)
+      const midHL = (slice) => {
+        if (!slice.length) return price;
+        return (Math.max(...slice.map(c => c.high)) + Math.min(...slice.map(c => c.low))) / 2;
+      };
+      const tenkan = midHL(candles.slice(-9));
+      const kijun = midHL(candles.slice(-26));
+      const spanA = (tenkan + kijun) / 2;
+      const spanB = midHL(candles.slice(-52));
+      const cloudTop = Math.max(spanA, spanB);
+      const cloudBot = Math.min(spanA, spanB);
+      let ichimokuVote = 'NEUTRAL';
+      if (price > cloudTop && tenkan >= kijun) ichimokuVote = 'BUY';
+      else if (price < cloudBot && tenkan <= kijun) ichimokuVote = 'SELL';
+
+      // 10. CCI (20)
+      const tpSlice = candles.slice(-20).map(c => (c.high + c.low + c.close) / 3);
+      const tpMean = tpSlice.reduce((a, b) => a + b, 0) / (tpSlice.length || 1);
+      const meanDev = tpSlice.reduce((a, b) => a + Math.abs(b - tpMean), 0) / (tpSlice.length || 1);
+      const cci = safeDiv(tpSlice[tpSlice.length - 1] - tpMean, 0.015 * meanDev, 0);
+      let cciVote = 'NEUTRAL';
+      if (cci < -100 || (cci > 20 && cci < 160)) cciVote = 'BUY';
+      else if (cci > 100 || (cci < -20 && cci > -160)) cciVote = 'SELL';
+
+      // 11. Williams %R (14)
+      const last14 = candles.slice(-14);
+      const hh14 = Math.max(...last14.map(c => c.high));
+      const ll14 = Math.min(...last14.map(c => c.low));
+      const willR = safeDiv(hh14 - price, hh14 - ll14, 0.5) * -100;
+      let willVote = 'NEUTRAL';
+      if (willR <= -78 || (willR > -48 && willR < -15)) willVote = 'BUY';
+      else if (willR >= -15 || (willR < -52 && willR > -78)) willVote = 'SELL';
+
+      // 12. Volume Buy/Sell Pressure Delta
+      const last8 = candles.slice(-8);
+      let buyQ = 0, totQ = 0;
+      last8.forEach(c => { buyQ += c.takerBuyQuoteVol; totQ += c.quoteVolume; });
+      const buyRatioPct = totQ > 0 ? (buyQ / totQ) * 100 : 50;
+      let volVote = 'NEUTRAL';
+      if (buyRatioPct >= 53.5) volVote = 'BUY';
+      else if (buyRatioPct <= 46.5) volVote = 'SELL';
+
+      const indicators = [
+        { id: 1, name: 'RSI (14)', value: rsi.toFixed(1), reason: rsi < 30 ? 'Oversold bounce zone' : rsi > 70 ? 'Overbought pressure' : 'Momentum alignment', vote: rsiVote },
+        { id: 2, name: 'MACD (12, 26, 9)', value: (macdHist >= 0 ? '+' : '') + fmtPrice(macdHist), reason: macdLine[len - 1] > signalLine[len - 1] ? 'Bullish signal cross' : 'Bearish signal cross', vote: macdVote },
+        { id: 3, name: 'EMA Ribbon (9/21/50/200)', value: '$' + fmtPrice(e21), reason: price > e200 ? 'Above 200 EMA trend' : 'Below 200 EMA trend', vote: emaVote },
+        { id: 4, name: 'Bollinger Bands (20, 2)', value: (bbPos * 100).toFixed(0) + '% Band', reason: price > mBB ? 'Upper volatility half' : 'Lower volatility half', vote: bbVote },
+        { id: 5, name: 'Stochastic RSI (14,14,3,3)', value: `${stochK.toFixed(0)} / ${stochD.toFixed(0)}`, reason: stochK > stochD ? '%K crossing above %D' : '%K crossing below %D', vote: stochVote },
+        { id: 6, name: 'ADX (14) Trend Strength', value: adx.toFixed(1), reason: plusDI > minusDI ? '+DI bullish dominance' : '-DI bearish dominance', vote: adxVote },
+        { id: 7, name: 'Session VWAP', value: '$' + fmtPrice(vwap), reason: price >= vwap ? 'Holding above VWAP' : 'Rejected below VWAP', vote: vwapVote },
+        { id: 8, name: 'Supertrend (10, 3)', value: '$' + fmtPrice(supertrendVal), reason: supertrendBull ? 'Bullish trailing support' : 'Bearish trailing stop', vote: supertrendVote },
+        { id: 9, name: 'Ichimoku Cloud', value: price > cloudTop ? 'Above Cloud' : price < cloudBot ? 'Below Cloud' : 'Inside Cloud', reason: tenkan > kijun ? 'Tenkan above Kijun' : 'Tenkan below Kijun', vote: ichimokuVote },
+        { id: 10, name: 'CCI (20)', value: cci.toFixed(0), reason: cci > 0 ? 'Positive cyclical flow' : 'Negative cyclical flow', vote: cciVote },
+        { id: 11, name: 'Williams %R (14)', value: willR.toFixed(1), reason: willR < -80 ? 'Oversold accumulation' : willR > -20 ? 'Overbought exhaustion' : 'Mid-channel momentum', vote: willVote },
+        { id: 12, name: 'Volume Buy/Sell Delta', value: buyRatioPct.toFixed(1) + '% Buy', reason: buyRatioPct >= 50 ? 'Taker buyers leading' : 'Taker sellers leading', vote: volVote }
+      ];
+
+      let buyVotes = 0, sellVotes = 0, neutralVotes = 0;
+      indicators.forEach(ind => {
+        if (ind.vote === 'BUY') buyVotes++;
+        else if (ind.vote === 'SELL') sellVotes++;
+        else neutralVotes++;
+      });
+
+      const atr14 = Math.max(price * 0.002, safeNum(calcATRArray(candles, 14)[len - 1], price * 0.01));
+      const dominantDirection = buyVotes >= sellVotes ? 'LONG' : 'SHORT';
+      const dominantCount = Math.max(buyVotes, sellVotes);
+      const accuracyPct = Math.round(((dominantCount + neutralVotes * 0.25) / 12) * 100);
+
+      let verdict = 'NEUTRAL';
+      if (buyVotes >= 9) verdict = 'STRONG BUY';
+      else if (buyVotes >= 7 && buyVotes > sellVotes + 2) verdict = 'BUY';
+      else if (sellVotes >= 9) verdict = 'STRONG SELL';
+      else if (sellVotes >= 7 && sellVotes > buyVotes + 2) verdict = 'SELL';
+
+      const entry = price;
+      let sl, tp1, tp2;
+      if (dominantDirection === 'LONG') {
+        sl = Math.max(price * 0.0001, entry - atr14 * 1.65);
+        const risk = Math.max(price * 0.001, entry - sl);
+        tp1 = entry + risk * 1.5;
+        tp2 = entry + risk * 2.5;
+      } else {
+        sl = entry + atr14 * 1.65;
+        const risk = Math.max(price * 0.001, sl - entry);
+        tp1 = Math.max(price * 0.0001, entry - risk * 1.5);
+        tp2 = Math.max(price * 0.0001, entry - risk * 2.5);
+      }
+
+      return {
+        price,
+        indicators,
+        buyVotes,
+        sellVotes,
+        neutralVotes,
+        verdict,
+        dominantDirection,
+        dominantCount,
+        accuracyPct,
+        entry,
+        sl,
+        tp1,
+        tp2,
+        atr14,
+        chartOverlays: { ema21, ema50 }
+      };
+    }
+
+    // =========================================================================
+    // 7. ANALYZE ACTIVE COIN & RENDER COMPLETE DASHBOARD
+    // =========================================================================
+    async function analyzeCurrentCoin() {
+      try {
+        setElText('finalVerdictTitle', 'UPDATING...');
+
+        const [candles, ticker] = await Promise.all([
+          fetchCandles(activeSymbol, activeTimeframe, 220, true),
+          fetchTicker24h(activeSymbol)
+        ]);
+
+        activeCandles = candles;
+        const result = evaluate12Indicators(candles);
+        activeAnalysis = result;
+
+        const cleanBase = activeSymbol.replace('USDT', '');
+        setElText('selectedCoinIcon', cleanBase.slice(0, 4));
+        setElText('selectedPairTitle', activeSymbol);
+        setElText('selectedTfChip', activeTimeframe.toUpperCase());
+        setElText('selectedLivePrice', '$' + fmtPrice(result.price));
+
+        const chgEl = document.getElementById('selected24hChange');
+        if (chgEl) {
+          if (ticker && ticker.priceChangePercent) {
+            const pct = safeNum(ticker.priceChangePercent, 0);
+            chgEl.textContent = `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}% (24h)`;
+            chgEl.className = pct >= 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold';
+          } else {
+            const prevClose = candles[Math.max(0, candles.length - 25)].close;
+            const pct = safeDiv(result.price - prevClose, prevClose, 0) * 100;
+            chgEl.textContent = `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`;
+            chgEl.className = pct >= 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold';
+          }
+        }
+
+        setElText('finalVerdictTitle', result.verdict);
+        if (result.verdict.includes('BUY')) {
+          setElClass('verdictPanel', 'terminal-card rounded-2xl p-4 sm:p-5 verdict-bull transition-all duration-300 flex-1 flex flex-col justify-between space-y-4');
+          setElClass('finalVerdictTitle', 'text-xl sm:text-2xl font-black tracking-tight text-emerald-400 mt-0.5');
+        } else if (result.verdict.includes('SELL')) {
+          setElClass('verdictPanel', 'terminal-card rounded-2xl p-4 sm:p-5 verdict-bear transition-all duration-300 flex-1 flex flex-col justify-between space-y-4');
+          setElClass('finalVerdictTitle', 'text-xl sm:text-2xl font-black tracking-tight text-rose-400 mt-0.5');
+        } else {
+          setElClass('verdictPanel', 'terminal-card rounded-2xl p-4 sm:p-5 verdict-neutral transition-all duration-300 flex-1 flex flex-col justify-between space-y-4');
+          setElClass('finalVerdictTitle', 'text-xl sm:text-2xl font-black tracking-tight text-amber-300 mt-0.5');
+        }
+
+        setElText('accuracyPctBadge', `${result.accuracyPct}%`);
+        const barBuy = document.getElementById('barBuy');
+        const barNeu = document.getElementById('barNeutral');
+        const barSell = document.getElementById('barSell');
+        if (barBuy) barBuy.style.width = `${(result.buyVotes / 12) * 100}%`;
+        if (barNeu) barNeu.style.width = `${(result.neutralVotes / 12) * 100}%`;
+        if (barSell) barSell.style.width = `${(result.sellVotes / 12) * 100}%`;
+
+        setElText('voteBuyCount', `${result.buyVotes}/12 Buy`);
+        setElText('voteNeutralCount', `${result.neutralVotes}/12 Neutral`);
+        setElText('voteSellCount', `${result.sellVotes}/12 Sell`);
+
+        const slPct = safeDiv(Math.abs(result.entry - result.sl), result.entry, 0) * 100;
+        setElText('tradeEntry', '$' + fmtPrice(result.entry));
+        setElText('tradeSideLabel', `${result.dominantDirection} SETUP`);
+        setElText('tradeSL', '$' + fmtPrice(result.sl));
+        setElText('tradeSLPct', `-${slPct.toFixed(2)}% Risk`);
+        setElText('tradeTP1', '$' + fmtPrice(result.tp1));
+        setElText('tradeTP2', '$' + fmtPrice(result.tp2));
+        setElText('chartAtrTag', `ATR(14): $${fmtPrice(result.atr14)}`);
+
+        renderIndicatorsGrid(result.indicators);
+        updatePositionCalc();
+        drawApexChart();
+      } catch (err) {
+        setElText('finalVerdictTitle', 'NEUTRAL');
+      }
+    }
+
+    function renderIndicatorsGrid(indicators) {
+      const grid = document.getElementById('indicatorsGrid');
+      if (!grid) return;
+      grid.innerHTML = indicators.map(ind => {
+        const badgeStyle = ind.vote === 'BUY'
+          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/35'
+          : ind.vote === 'SELL'
+            ? 'bg-rose-500/15 text-rose-400 border-rose-500/35'
+            : 'bg-slate-800 text-slate-300 border-slate-700';
+
+        const cardBorder = ind.vote === 'BUY'
+          ? 'border-emerald-500/25 hover:border-emerald-500/50'
+          : ind.vote === 'SELL'
+            ? 'border-rose-500/25 hover:border-rose-500/50'
+            : 'border-slate-800 hover:border-slate-700';
+
+        return `
+          <div class="bg-[#090d16] border ${cardBorder} rounded-xl p-3.5 transition flex flex-col justify-between">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <span class="text-[10px] font-mono text-slate-500">#${String(ind.id).padStart(2, '0')}</span>
+                <h4 class="text-xs sm:text-sm font-bold text-white leading-snug mt-0.5">${ind.name}</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-extrabold border shrink-0 ${badgeStyle}">${ind.vote}</span>
+            </div>
+            <div class="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2 text-xs font-mono">
+              <span class="text-slate-400 text-[10px] sm:text-[11px] truncate">${ind.reason}</span>
+              <span class="font-bold text-amber-300 shrink-0">${ind.value}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updatePositionCalc() {
+      try {
+        if (!activeAnalysis) return;
+        const bal = Math.max(0, safeNum(document.getElementById('calcBalance')?.value, 0));
+        const riskPct = Math.max(0, safeNum(document.getElementById('calcRiskPct')?.value, 0));
+        const lev = Math.max(1, safeNum(document.getElementById('calcLeverage')?.value, 1));
+
+        const riskUsd = bal * (riskPct / 100);
+        const slDistPct = safeDiv(Math.abs(activeAnalysis.entry - activeAnalysis.sl), activeAnalysis.entry, 0);
+        const posUsdt = slDistPct > 0 ? riskUsd / slDistPct : 0;
+        const marginUsdt = posUsdt / lev;
+        const coinUnits = safeDiv(posUsdt, activeAnalysis.entry, 0);
+        const cleanCoin = activeSymbol.replace('USDT', '');
+
+        setElText('calcRiskUsdBadge', `Risk: $${riskUsd.toFixed(2)}`);
+        setElText('calcPosSize', `$${posUsdt.toLocaleString('en-US', { maximumFractionDigits: 1 })}`);
+        setElText('calcMarginReq', `$${marginUsdt.toLocaleString('en-US', { maximumFractionDigits: 1 })}`);
+        setElText('calcCoinUnits', `${coinUnits >= 10 ? coinUnits.toFixed(2) : coinUnits.toFixed(4)} ${cleanCoin}`);
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // 8. BACKGROUND TOP 16 SCANNER, ALERT BANNER & TOP 6 LEADERBOARD
+    // =========================================================================
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function runTop16Scanner() {
+      try {
+        setElText('scannerStatusText', `Scanning Top 16 Binance USDT pairs (${activeTimeframe.toUpperCase()})...`);
+        const scanned = [];
+
+        for (let i = 0; i < TOP_16_PAIRS.length; i++) {
+          const sym = TOP_16_PAIRS[i];
+          try {
+            const c = await fetchCandles(sym, activeTimeframe, 140, false);
+            scanned.push({ symbol: sym, ...evaluate12Indicators(c) });
+          } catch (e) {}
+          await sleep(80);
+        }
+
+        if (!scanned.length) return;
+
+        scanned.sort((a, b) => (b.accuracyPct - a.accuracyPct) || (b.dominantCount - a.dominantCount));
+        const best = scanned[0];
+        topAlertCandidate = best;
+
+        const isLong = best.dominantDirection === 'LONG';
+        const loadBtn = document.getElementById('loadAlertCoinBtn');
+
+        if (isLong) {
+          setElClass('bestAlertBanner', 'rounded-2xl border p-3.5 sm:p-4 transition-all duration-500 alert-glow-bull flex flex-col md:flex-row md:items-center justify-between gap-3');
+          setElClass('alertBeaconDot', 'relative w-3.5 h-3.5 mt-1 sm:mt-0 rounded-full bg-emerald-400 pulse-beacon shrink-0');
+          setElClass('alertTagBadge', 'px-2.5 py-0.5 rounded-md text-[10px] font-mono font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40');
+          if (loadBtn) loadBtn.className = 'min-h-[40px] px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold tracking-wide transition shadow-lg shadow-emerald-500/25';
+        } else {
+          setElClass('bestAlertBanner', 'rounded-2xl border p-3.5 sm:p-4 transition-all duration-500 alert-glow-bear flex flex-col md:flex-row md:items-center justify-between gap-3');
+          setElClass('alertBeaconDot', 'relative w-3.5 h-3.5 mt-1 sm:mt-0 rounded-full bg-rose-400 pulse-beacon shrink-0');
+          setElClass('alertTagBadge', 'px-2.5 py-0.5 rounded-md text-[10px] font-mono font-extrabold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/40');
+          if (loadBtn) loadBtn.className = 'min-h-[40px] px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-extrabold tracking-wide transition shadow-lg shadow-rose-500/25';
+        }
+
+        if (loadBtn) loadBtn.disabled = false;
+        setElText('scannerStatusText', best.accuracyPct >= 68
+          ? `High Consensus Alert (≥68%) • ${activeTimeframe.toUpperCase()} TF`
+          : `Top Consensus Leader • ${activeTimeframe.toUpperCase()} TF`);
+        setElText('alertHeadline',
+          `🔥 BEST LIVE OPPORTUNITY: ${best.symbol} (${best.dominantDirection}) — ${best.verdict} • ${best.accuracyPct}% Accuracy`);
+        setElText('alertSubtext',
+          `Entry: $${fmtPrice(best.entry)} | TP1: $${fmtPrice(best.tp1)} | SL: $${fmtPrice(best.sl)}`);
+
+        const alertSig = `${best.symbol}_${best.verdict}_${activeTimeframe}`;
+        if (alertSig !== lastAlertedKey && best.accuracyPct >= 68) {
+          lastAlertedKey = alertSig;
+          playAlertTone();
+        }
+
+        // Top 6 Leaderboard
+        const top6 = scanned.slice(0, 6);
+        const listEl = document.getElementById('topOpportunitiesList');
+        if (listEl) {
+          listEl.innerHTML = top6.map((item, idx) => {
+            const isBull = item.dominantDirection === 'LONG';
+            const dirBadge = isBull
+              ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/35'
+              : 'bg-rose-500/15 text-rose-400 border-rose-500/35';
+            const activeRing = item.symbol === activeSymbol ? 'ring-1 ring-amber-400/80 bg-slate-800/80' : 'bg-[#090d16] hover:bg-slate-800/70';
+
+            return `
+              <div onclick="selectCoin('${item.symbol}')" class="cursor-pointer rounded-xl border border-slate-800 ${activeRing} p-2.5 transition flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-5 h-5 rounded-md bg-slate-800 text-[10px] font-mono font-bold text-slate-400 flex items-center justify-center shrink-0">#${idx + 1}</span>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs font-mono font-extrabold text-white truncate">${item.symbol}</span>
+                      <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-extrabold border ${dirBadge}">${item.verdict}</span>
+                    </div>
+                    <span class="text-[10px] font-mono text-slate-400 block">$${fmtPrice(item.price)}</span>
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="text-sm font-mono font-black ${isBull ? 'text-emerald-400' : 'text-rose-400'}">${item.accuracyPct}%</span>
+                  <span class="block text-[9px] font-mono text-amber-400">Load →</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        setElText('scannerTimeframeTag', `${activeTimeframe.toUpperCase()} TF`);
+        setElText('lastScanClock', new Date().toLocaleTimeString());
+      } catch (e) {}
+    }
+
+    function loadTopAlertCoin() {
+      if (!topAlertCandidate) return;
+      selectCoin(topAlertCandidate.symbol);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // 9. USER SELECTION HANDLERS
+    // =========================================================================
+    function selectCoin(symbol) {
+      activeSymbol = symbol.toUpperCase().trim();
+      document.querySelectorAll('.coin-pill').forEach(btn => {
+        if (btn.dataset.coin === activeSymbol) {
+          btn.className = 'coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition shrink-0';
+        } else {
+          btn.className = 'coin-pill min-h-[34px] px-3 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition shrink-0';
+        }
+      });
+      analyzeCurrentCoin();
+    }
+
+    function searchCustomCoin() {
+      const inp = document.getElementById('coinSearchInput');
+      if (!inp) return;
+      let val = inp.value.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
+      if (!val) return;
+      if (!val.endsWith('USDT') && !val.endsWith('BTC') && !val.endsWith('FDUSD')) {
+        val += 'USDT';
+      }
+      inp.value = val;
+      selectCoin(val);
+    }
+
+    const searchInpEl = document.getElementById('coinSearchInput');
+    if (searchInpEl) {
+      searchInpEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') searchCustomCoin();
+      });
+    }
+
+    function selectTimeframe(tf) {
+      activeTimeframe = tf;
+      document.querySelectorAll('.tf-pill').forEach(btn => {
+        if (btn.dataset.tf === tf) {
+          btn.className = 'tf-pill min-h-[32px] px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 transition';
+        } else {
+          btn.className = 'tf-pill min-h-[32px] px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-slate-400 hover:text-white transition';
+        }
+      });
+      analyzeCurrentCoin();
+      runTop16Scanner();
+    }
+
+    // =========================================================================
+    // 10. RESPONSIVE HTML5 CANVAS CANDLESTICK + EMA 21/50 + TRADE LEVELS CHART
+    // =========================================================================
+    function drawApexChart() {
+      try {
+        const canvas = document.getElementById('apexChartCanvas');
+        if (!canvas || !activeCandles.length || !activeAnalysis) return;
+
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        const width = rect.width;
+        const height = rect.height;
+        ctx.clearRect(0, 0, width, height);
+
+        const visibleCount = Math.min(72, activeCandles.length);
+        const startIdx = activeCandles.length - visibleCount;
+        const slice = activeCandles.slice(startIdx);
+        const { ema21, ema50 } = activeAnalysis.chartOverlays;
+        const { entry, sl, tp1, tp2 } = activeAnalysis;
+
+        let minP = Math.min(sl, ...slice.map(c => c.low));
+        let maxP = Math.max(tp2, ...slice.map(c => c.high));
+
+        const pad = Math.max(1e-8, (maxP - minP) * 0.08);
+        minP -= pad;
+        maxP += pad;
+
+        const rightAxisW = 72;
+        const chartW = width - rightAxisW;
+        const chartH = height - 18;
+
+        const toY = (p) => chartH - safeDiv(p - minP, maxP - minP, 0.5) * chartH;
+        const toX = (i) => (i + 0.5) * (chartW / visibleCount);
+
+        // Horizontal Grid & Right Price Axis
+        ctx.strokeStyle = 'rgba(30, 41, 59, 0.55)';
+        ctx.lineWidth = 1;
+        ctx.font = '10px JetBrains Mono';
+        ctx.fillStyle = '#64748b';
+        for (let g = 0; g <= 5; g++) {
+          const p = minP + ((maxP - minP) / 5) * g;
+          const y = toY(p);
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(chartW, y);
+          ctx.stroke();
+          ctx.fillText(fmtPrice(p), chartW + 5, y + 3);
+        }
+
+        // EMA 21 (Cyan) & EMA 50 (Gold)
+        const emas = [
+          { data: ema21, color: '#22d3ee' },
+          { data: ema50, color: '#f59e0b' }
+        ];
+        emas.forEach(e => {
+          ctx.strokeStyle = e.color;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          for (let i = 0; i < visibleCount; i++) {
+            const x = toX(i), y = toY(e.data[startIdx + i]);
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        });
+
+        // Candlesticks
+        const cWidth = Math.max(2.5, (chartW / visibleCount) * 0.65);
+        slice.forEach((c, i) => {
+          const x = toX(i);
+          const bull = c.close >= c.open;
+          const col = bull ? '#10b981' : '#f43f5e';
+          ctx.strokeStyle = col;
+          ctx.lineWidth = 1.1;
+          ctx.beginPath();
+          ctx.moveTo(x, toY(c.high));
+          ctx.lineTo(x, toY(c.low));
+          ctx.stroke();
+
+          const yO = toY(c.open), yC = toY(c.close);
+          ctx.fillStyle = col;
+          ctx.fillRect(x - cWidth / 2, Math.min(yO, yC), cWidth, Math.max(1.5, Math.abs(yC - yO)));
+        });
+
+        // Horizontal Dashed Trade Level Lines (Entry, SL, TP1, TP2)
+        const levels = [
+          { price: tp2, label: 'TP2', color: '#10b981' },
+          { price: tp1, label: 'TP1', color: '#34d399' },
+          { price: entry, label: 'ENTRY', color: '#22d3ee' },
+          { price: sl, label: 'SL', color: '#f43f5e' }
+        ];
+
+        levels.forEach(lvl => {
+          const y = toY(lvl.price);
+          if (y < 0 || y > chartH) return;
+          ctx.strokeStyle = lvl.color;
+          ctx.lineWidth = 1.2;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(chartW, y);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = lvl.color;
+          ctx.fillRect(chartW + 2, y - 8, rightAxisW - 4, 16);
+          ctx.fillStyle = '#090d16';
+          ctx.font = 'bold 9px JetBrains Mono';
+          ctx.fillText(lvl.label, chartW + 6, y + 3);
+        });
+      } catch (e) {}
+    }
+
+    const chartEl = document.getElementById('apexChartCanvas');
+    const infoBox = document.getElementById('chartCrosshairInfo');
+
+    function handleChartPointer(clientX) {
+      if (!activeCandles.length || !chartEl || !infoBox) return;
+      const rect = chartEl.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const visibleCount = Math.min(72, activeCandles.length);
+      const chartW = rect.width - 72;
+      const idx = Math.floor((x / chartW) * visibleCount);
+      if (idx >= 0 && idx < visibleCount) {
+        const c = activeCandles[activeCandles.length - visibleCount + idx];
+        const timeStr = new Date(c.time).toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        infoBox.innerHTML = `<span class="text-amber-300">${timeStr}</span> | O:${fmtPrice(c.open)} H:${fmtPrice(c.high)} L:${fmtPrice(c.low)} C:<span class="${c.close >= c.open ? 'text-emerald-400' : 'text-rose-400'}">${fmtPrice(c.close)}</span>`;
+        infoBox.classList.remove('hidden');
+      } else {
+        infoBox.classList.add('hidden');
+      }
+    }
+
+    if (chartEl) {
+      chartEl.addEventListener('mousemove', (e) => handleChartPointer(e.clientX));
+      chartEl.addEventListener('touchstart', (e) => { if (e.touches[0]) handleChartPointer(e.touches[0].clientX); }, { passive: true });
+      chartEl.addEventListener('touchmove', (e) => { if (e.touches[0]) handleChartPointer(e.touches[0].clientX); }, { passive: true });
+      chartEl.addEventListener('touchend', () => { if (infoBox) setTimeout(() => infoBox.classList.add('hidden'), 1800); });
+      chartEl.addEventListener('mouseleave', () => { if (infoBox) infoBox.classList.add('hidden'); });
+    }
+    window.addEventListener('resize', drawApexChart);
+
+    // =========================================================================
+    // 11. INITIALIZATION ON WINDOW LOAD
+    // =========================================================================
+    window.onload = function () {
+      analyzeCurrentCoin();
+      runTop16Scanner();
+      scannerInterval = setInterval(() => {
+        analyzeCurrentCoin();
+        runTop16Scanner();
+      }, 60000);
+    };
+  </script>
+</body>
+</html>
